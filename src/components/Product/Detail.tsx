@@ -9,20 +9,19 @@ const Detail = ({ id }: { id: string }) => {
   const cartsContext = useContext(CartsContext)
   const updateCartsContext = useContext(UpdateCartsContext)
 
-  const { props, openModal, setOpenModal } = useModal({ title: '장바구니에 담았어요!' })
+  const { title, isOpen, setIsOpenModal } = useModal({ title: '장바구니에 담았어요!' })
 
   const { data: detailItem } = useQuery({
     queryKey: ['detailItem'],
     queryFn: () => {
       return getProductDetailItem(id)
     },
-    retry: 3,
   })
 
   if (!detailItem) return null
   return (
     <div className="product-detail-container">
-      {openModal && <Modal props={{ ...props }} />}
+      {isOpen && <Modal props={{ title, isOpen, setModalStatus: () => setIsOpenModal }} />}
       {detailItem && (
         <div className="flex-col-center w-520">
           <img className="w-480 h-480 mb-10" src={detailItem.imageUrl} alt={detailItem.name} />
@@ -37,7 +36,7 @@ const Detail = ({ id }: { id: string }) => {
           <button
             className="product-detail-button flex-center mt-20"
             onClick={() => {
-              setOpenModal(true)
+              setIsOpenModal(true)
               updateCartsContext({ ...cartsContext, carts: [...cartsContext.carts, detailItem] })
             }}
           >

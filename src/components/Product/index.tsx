@@ -14,7 +14,6 @@ const ProductList = () => {
     queryFn: () => {
       return getProductList()
     },
-    retry: 3,
   })
 
   if (!productList) return null

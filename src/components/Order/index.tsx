@@ -9,28 +9,24 @@ const OrderList = () => {
   const cartsContext = useContext(CartsContext)
   const updateCartsContext = useContext(UpdateCartsContext)
 
-  const { props, openModal, setOpenModal } = useModal({ title: '장바구니에 담았어요!' })
+  const { title, isOpen, setIsOpenModal } = useModal({ title: '장바구니에 담았어요!' })
 
   const { data: orderList } = useQuery({
     queryKey: ['orderList'],
     queryFn: () => {
       return getOrderList()
     },
-    retry: 3,
   })
 
-  useEffect(() => {
-    if (orderList) {
-      updateCartsContext({ ...cartsContext, order: orderList })
-    }
-  }, [orderList])
-
+  if (!orderList) return null
   return (
     <section className="order-section">
-      {openModal && (
+      {isOpen && (
         <Modal
           props={{
-            ...props,
+            title,
+            isOpen,
+            setModalStatus: () => setIsOpenModal,
           }}
         />
       )}
@@ -44,7 +40,7 @@ const OrderList = () => {
           <span>주문번호: 1</span>
           <span>상세보기 {`>`}</span>
         </div>
-        {cartsContext.order.map((item, idx) => (
+        {orderList.map((item) => (
           <div className="order-list-item" key={item.id}>
             {item.orderDetails.map((order) => (
               <div key={order.name} className="order-row">
@@ -60,7 +56,7 @@ const OrderList = () => {
                 <button
                   className="primary-button-small flex-center self-start"
                   onClick={() => {
-                    setOpenModal(true)
+                    setIsOpenModal(true)
                     updateCartsContext({ ...cartsContext, carts: [...cartsContext.carts, order] })
                   }}
                 >
