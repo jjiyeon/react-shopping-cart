@@ -10,21 +10,26 @@ export interface Order {
   id: number
   orderDetails: Array<Product & { quantity: number }>
 }
+
+export interface CartItem extends Product {
+  quantity: number
+  isChecked?: boolean
+}
 export interface MyOrder {
-  carts: Array<Product>
+  cart: Array<CartItem>
   order: Array<Order>
 }
-export const CartsContext = createContext<MyOrder>({ carts: [], order: [] })
-export const UpdateCartsContext = createContext<(payload: MyOrder) => void>(() => {})
+export const CartContext = createContext<MyOrder>({ cart: [], order: [] })
+export const UpdateCartContext = createContext<(payload: MyOrder) => void>(() => {})
 
 const CartsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [myOrder, setMyOrder] = useState<MyOrder>({ carts: [], order: [] })
+  const [myOrder, setMyOrder] = useState<MyOrder>({ cart: [], order: [] })
 
   return (
     <>
-      <UpdateCartsContext.Provider value={setMyOrder}>
-        <CartsContext.Provider value={myOrder}>{children}</CartsContext.Provider>
-      </UpdateCartsContext.Provider>
+      <UpdateCartContext.Provider value={setMyOrder}>
+        <CartContext.Provider value={myOrder}>{children}</CartContext.Provider>
+      </UpdateCartContext.Provider>
     </>
   )
 }

@@ -12,7 +12,7 @@ const router = createRouter({
   defaultPreload: 'intent',
   context: {
     myOrder: {
-      carts: [],
+      cart: [],
       order: [],
     },
   },

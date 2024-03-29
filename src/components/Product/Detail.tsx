@@ -1,13 +1,13 @@
 import { useContext } from 'react'
-import { CartsContext, UpdateCartsContext } from '../../context/cartsContext'
+import { CartContext, UpdateCartContext } from '../../context/cartsContext'
 import Modal from '../common/Modal'
 import { useQuery } from '@tanstack/react-query'
 import { getProductDetailItem } from '../../api/cart'
 import useModal from '../../hooks/useModal'
 
 const Detail = ({ id }: { id: string }) => {
-  const cartsContext = useContext(CartsContext)
-  const updateCartsContext = useContext(UpdateCartsContext)
+  const cartsContext = useContext(CartContext)
+  const updateCartsContext = useContext(UpdateCartContext)
 
   const { title, isOpen, setIsOpenModal } = useModal({ title: '장바구니에 담았어요!' })
 
@@ -37,7 +37,7 @@ const Detail = ({ id }: { id: string }) => {
             className="product-detail-button flex-center mt-20"
             onClick={() => {
               setIsOpenModal(true)
-              updateCartsContext({ ...cartsContext, carts: [...cartsContext.carts, detailItem] })
+              updateCartsContext({ ...cartsContext, cart: [...cartsContext.cart, { ...detailItem, quantity: 1 }] })
             }}
           >
             장바구니
