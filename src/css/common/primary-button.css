@@ -5,6 +5,9 @@
   width: 100%;
   padding: 20px;
 }
+button:disabled {
+  background: #e4e4e4;
+}
 
 .primary-button-small {
   background: #2ac1bc;
