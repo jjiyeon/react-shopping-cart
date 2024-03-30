@@ -1,9 +1,10 @@
-import { useContext, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import CartLogo from '../../assets/svgs/cart.svg?react'
 import { CartContext, UpdateCartContext } from '../../context/cartsContext'
-import { Link, useNavigate, useRouter } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { getProductList } from '../../api/cart'
+import { useNavigate } from '@tanstack/react-router'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { getProductAPI, getProductList } from '../../api/cart'
+import useIntersectionObserver from '../../hooks/useIntersectionObserver'
 
 const ProductList = () => {
   const productRef = useRef<HTMLLIElement>(null)
@@ -11,20 +12,43 @@ const ProductList = () => {
   const updateCartContext = useContext(UpdateCartContext)
 
   const navigate = useNavigate()
+  const infiniteObserverRef = useRef<HTMLDivElement>(null)
 
-  const { data: productList } = useQuery({
-    queryKey: ['productList'],
-    queryFn: () => {
-      return getProductList()
+  const {
+    data: productList,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['producetKey'],
+    queryFn: ({ pageParam = 0 }) => getProductAPI({ page: pageParam }),
+    initialPageParam: 0,
+
+    getNextPageParam: (lastPage, pages) => {
+      const nextPage = pages.length
+      return lastPage.response.content.length === 0 ? undefined : nextPage
+    },
+    select: (data) => {
+      return { pages: data.pages.flatMap((page) => page.response.content), pageParams: data.pageParams }
     },
   })
 
-  if (!productList) return null
+  const { setIsReady } = useIntersectionObserver({
+    target: infiniteObserverRef,
+    callback: () => {
+      if (hasNextPage) fetchNextPage()
+    },
+  })
+
+  useEffect(() => {
+    setIsReady()
+  }, [])
+
+  if (!productList?.pages) return null
 
   return (
     <div className="product-container">
       <ul className="product_list">
-        {productList.map((item) => (
+        {productList.pages.map((item) => (
           <li
             className="list_box"
             key={item.id}
@@ -56,6 +80,7 @@ const ProductList = () => {
           </li>
         ))}
       </ul>
+      <div ref={infiniteObserverRef} style={{ width: '100%', height: '50px', background: 'tomato' }}></div>
     </div>
   )
 }
