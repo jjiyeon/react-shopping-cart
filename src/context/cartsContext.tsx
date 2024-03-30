@@ -17,13 +17,14 @@ export interface CartItem extends Product {
 }
 export interface MyOrder {
   cart: Array<CartItem>
-  order: Array<Order>
+  order: Array<CartItem>
+  orderHistory: Array<Order>
 }
-export const CartContext = createContext<MyOrder>({ cart: [], order: [] })
+export const CartContext = createContext<MyOrder>({ cart: [], order: [], orderHistory: [] })
 export const UpdateCartContext = createContext<(payload: MyOrder) => void>(() => {})
 
 const CartsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [myOrder, setMyOrder] = useState<MyOrder>({ cart: [], order: [] })
+  const [myOrder, setMyOrder] = useState<MyOrder>({ cart: [], order: [], orderHistory: [] })
 
   return (
     <>
