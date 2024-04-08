@@ -1,12 +1,11 @@
 import { useContext } from 'react'
 import { CartContext } from '../../context/cartsContext'
-import { CheckeditemCount, estimatedPrice } from '../../util/calculator'
+import { checkedItemCount, sumPrice } from '../../util/calculator'
 import { fomattingComma } from '../../util/formatter'
 
 const Order = () => {
   const orderContext = useContext(CartContext)
-
-  const checkedItems = CheckeditemCount({ item: orderContext.order })
+  const checkedItems = checkedItemCount({ item: orderContext.order })
   if (!checkedItems) return null
   return (
     <section className="order-section">
@@ -20,7 +19,7 @@ const Order = () => {
           <h3 className="order-title">주문 상품{`(${orderContext.order.length})개`}</h3>
           <hr className="divide-line-gray mt-10" />
           {orderContext.order.map((item) => (
-            <div className="order-container">
+            <div className="order-container" key={item.id}>
               <div className="flex gap-15 mt-10">
                 <img className="w-144 h-144" src={item.imageUrl} alt={item.name} />
                 <div className="flex-col gap-15">
@@ -41,11 +40,11 @@ const Order = () => {
           <div className="order-right-section__bottom">
             <div className="flex justify-between p-20 mt-20">
               <span className="highlight-text">총 결제금액</span>
-              <span className="highlight-text">{fomattingComma(estimatedPrice({ item: checkedItems }))}원</span>
+              <span className="highlight-text">{fomattingComma(sumPrice({ item: checkedItems }))}원</span>
             </div>
             <div className="flex-center mt-30 mx-10">
               <button className="primary-button flex-center">
-                {fomattingComma(estimatedPrice({ item: checkedItems }))}원 결제하기
+                {fomattingComma(sumPrice({ item: checkedItems }))}원 결제하기
               </button>
             </div>
           </div>
