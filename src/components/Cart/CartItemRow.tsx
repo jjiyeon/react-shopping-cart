@@ -3,6 +3,7 @@ import { CartItem, CartContext, UpdateCartContext } from '../../context/cartsCon
 import Checkbox from '../common/Checkbox'
 
 import TrashIcon from '../../assets/svgs/trash.svg?react'
+import { fomattingComma } from '../../util/formatter'
 
 enum Calc {
   plus,
@@ -19,7 +20,7 @@ const CartItemRow = () => {
       ...myCarts,
       cart: myCarts.cart.map((item) => {
         if (item.id === id) {
-          item.isChecked = !item.isChecked
+          return { ...item, isChecked: !item.isChecked }
         }
         return item
       }),
@@ -31,18 +32,22 @@ const CartItemRow = () => {
     }
   }
   const updateItemQuantity = (item: CartItem, type: Calc) => {
-    let newItems: Array<CartItem> = []
+    const newItems: Array<CartItem> = []
 
     if (type === Calc.plus) {
-      newItems = cart.map((inItem) => {
-        if (inItem.id === item.id) inItem.quantity = inItem.quantity += 1 //return { ...inItem, quantity: ++inItem.quantity }
-        return inItem
-      })
+      newItems.push(
+        ...cart.map((inItem) => {
+          if (inItem.id === item.id) return { ...inItem, quantity: (inItem.quantity += 1) }
+          return inItem
+        })
+      )
     } else {
-      newItems = cart.map((inItem) => {
-        if (inItem.id === item.id) inItem.quantity = inItem.quantity -= 1 //return { ...inItem, quantity: ++inItem.quantity }
-        return inItem
-      })
+      newItems.push(
+        ...cart.map((inItem) => {
+          if (inItem.id === item.id) return { ...inItem, quantity: (inItem.quantity -= 1) }
+          return inItem
+        })
+      )
     }
 
     updateCart({
@@ -54,11 +59,11 @@ const CartItemRow = () => {
   return (
     <>
       {myCarts.cart.map((item, _) => (
-        <div className="cart-container" key={item.name}>
+        <div className="cart-container" key={item.id}>
           <div className="flex gap-15 mt-10">
             <Checkbox
-              id={item.name}
-              isChecked={item.isChecked || false}
+              id={String(item.id)}
+              isChecked={item.isChecked ?? false}
               onChange={() => handleCheckboxChange(item.id)}
             />
             <img className="w-144 h-144" src={item.imageUrl} alt={item.name} />
@@ -74,20 +79,28 @@ const CartItemRow = () => {
                 <button
                   type="button"
                   className="number-input-button"
-                  onClick={() => item.quantity < 20 && updateItemQuantity(item, Calc.plus)}
+                  onClick={() => {
+                    if (item.quantity < 20) {
+                      updateItemQuantity(item, Calc.plus)
+                    }
+                  }}
                 >
                   ▲
                 </button>
                 <button
                   type="button"
                   className="number-input-button"
-                  onClick={() => item.quantity > 1 && updateItemQuantity(item, Calc.minus)}
+                  onClick={() => {
+                    if (item.quantity > 1) {
+                      updateItemQuantity(item, Calc.minus)
+                    }
+                  }}
                 >
                   ▼
                 </button>
               </div>
             </div>
-            <span className="cart-price">{item.price.toLocaleString('ko-KR')}원</span>
+            <span className="cart-price">{fomattingComma(item.price)}원</span>
           </div>
         </div>
       ))}
