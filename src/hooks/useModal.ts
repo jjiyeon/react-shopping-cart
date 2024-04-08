@@ -1,15 +1,9 @@
 import { useState } from 'react'
 
-type ModalProps = {
-  title?: string
-}
-const useModal = ({ title = '확인해주세요.' }: ModalProps) => {
+const useModal = () => {
   const [isOpen, setIsOpenModal] = useState(false)
-  const props = {
-    title: title,
-    setModalStatus: () => setIsOpenModal((state) => !state),
-  }
-  return { isOpen, setIsOpenModal, ...props }
+
+  return { isOpen, setIsOpenModal }
 }
 
 export default useModal
