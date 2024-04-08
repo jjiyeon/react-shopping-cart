@@ -1,22 +1,19 @@
-import { useContext } from 'react'
-import { CartContext, UpdateCartContext } from '../../context/cartsContext'
 import Modal from '../common/Modal'
 import useModal from '../../hooks/useModal'
+import useCart from '../../hooks/useCart'
 
 const OrderList = () => {
-  const orderContext = useContext(CartContext)
-  const updateCartContext = useContext(UpdateCartContext)
+  const { orderContext, actions } = useCart()
 
-  const { title, isOpen, setIsOpenModal } = useModal({ title: '장바구니에 담았어요!' })
+  const { isOpen, setIsOpenModal } = useModal()
 
   return (
     <section className="order-section">
       {isOpen && (
         <Modal
           props={{
-            title,
             isOpen,
-            setModalStatus: () => setIsOpenModal,
+            setModalStatus: () => setIsOpenModal((state) => !state),
           }}
         />
       )}
@@ -33,7 +30,7 @@ const OrderList = () => {
         {orderContext.orderHistory.map((item) => (
           <div className="order-list-item" key={item.id}>
             {item.orderDetails.map((order) => (
-              <div key={order.name} className="order-row">
+              <div key={order.id} className="order-row">
                 <div className="flex gap-15 mt-10 custom">
                   <img className="w-144 h-144" src={order.imageUrl} alt={order.name} />
                   <div className="flex-col gap-15">
@@ -47,7 +44,8 @@ const OrderList = () => {
                   className="primary-button-small flex-center self-start"
                   onClick={() => {
                     setIsOpenModal(true)
-                    updateCartContext({ ...orderContext, cart: [...orderContext.cart, order] })
+                    actions('ADD_CART_ITEM', [order])
+                    // addCartItem([order])
                   }}
                 >
                   장바구니
