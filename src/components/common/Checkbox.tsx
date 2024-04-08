@@ -1,13 +1,13 @@
-type CheckboxProps = {
+interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string
-  isChecked?: boolean
   onChange: () => void
+  isChecked?: boolean
 }
 
-const Checkbox = ({ id, isChecked, onChange }: CheckboxProps) => {
+const Checkbox = ({ id, isChecked, onChange, ...props }: CheckboxProps) => {
   return (
     <label htmlFor="selctAll">
-      <input className="checkbox" type="checkbox" value={id} onChange={onChange} checked={isChecked} />
+      <input className="checkbox" type="checkbox" value={id} onChange={onChange} checked={isChecked} {...props} />
     </label>
   )
 }
