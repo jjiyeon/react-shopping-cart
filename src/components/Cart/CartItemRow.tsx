@@ -100,7 +100,7 @@ const CartItemRow = () => {
                 </button>
               </div>
             </div>
-            <span className="cart-price">{fomattingComma(item.price)}원</span>
+            <span className="cart-price">{fomattingComma(item.price * item.quantity)}원</span>
           </div>
         </div>
       ))}
