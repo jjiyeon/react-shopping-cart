@@ -1,16 +1,16 @@
 import { useContext, useEffect, useRef } from 'react'
 import CartLogo from '../../assets/svgs/cart.svg?react'
-import { CartContext, UpdateCartContext } from '../../context/cartsContext'
+import { CartContext, Product, UpdateCartContext } from '../../context/cartsContext'
 import { useNavigate } from '@tanstack/react-router'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { getProductAPI, getProductList } from '../../api/cart'
 import useIntersectionObserver from '../../hooks/useIntersectionObserver'
+import useCart from '../../hooks/useCart'
 
 const ProductList = () => {
   const productRef = useRef<HTMLLIElement>(null)
-  const cartsContext = useContext(CartContext)
-  const updateCartContext = useContext(UpdateCartContext)
 
+  const { orderContext, actions } = useCart()
   const navigate = useNavigate()
   const infiniteObserverRef = useRef<HTMLDivElement>(null)
 
@@ -32,17 +32,19 @@ const ProductList = () => {
     },
   })
 
-  const { setIsReady } = useIntersectionObserver({
+  useIntersectionObserver({
     target: infiniteObserverRef,
     callback: () => {
       if (hasNextPage) fetchNextPage()
     },
   })
 
-  useEffect(() => {
-    setIsReady()
-  }, [])
-
+  const handleAddCartClick = (param: Product) => {
+    const itemAmount = orderContext.cart.filter((item) => item.id === param.id)
+    if (itemAmount.length) {
+      actions('UPDATE_ITEM_QUANTITY', [{ ...param, quantity: itemAmount[0].quantity++ }])
+    }
+  }
   if (!productList?.pages) return null
 
   return (
@@ -55,7 +57,6 @@ const ProductList = () => {
             ref={productRef}
             role="link"
             onClick={(e) => {
-              if (e.target !== productRef.current) return
               navigate({ to: '/list/$id', params: { id: String(item.id) } })
             }}
           >
@@ -69,9 +70,10 @@ const ProductList = () => {
               </div>
               <button
                 className="add_cart"
-                onClick={() => {
-                  updateCartContext({ ...cartsContext, cart: [...cartsContext.cart, { ...item, quantity: 1 }] })
-                  navigate({ to: '/cart' })
+                onClick={(e) => {
+                  handleAddCartClick(item)
+                  // updateCartContext({ ...cartsContext, cart: [...cartsContext.cart, { ...item, quantity: 1 }] })
+                  // navigate({ to: '/cart' })
                 }}
               >
                 <CartLogo />
