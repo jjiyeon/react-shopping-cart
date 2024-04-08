@@ -3,14 +3,30 @@ import { CartContext, UpdateCartContext } from '../../context/cartsContext'
 import Checkbox from '../common/Checkbox'
 import Payment from './Payment'
 import CartItemRow from './CartItemRow'
+import useCart from '../../hooks/useCart'
 
 const Cart = () => {
   const myContext = useContext(CartContext)
   const updateCart = useContext(UpdateCartContext)
   const [allCheckbox, setAllCheckbox] = useState(false)
 
+  const { orderContext, actions } = useCart()
+
   const handleChangeAll = () => {
     setAllCheckbox((state) => !state)
+
+    updateCart({
+      ...myContext,
+      cart: myContext.cart.map((item) => ({ ...item, isChecked: !allCheckbox })),
+    })
+  }
+
+  const isAllChecked = () => {
+    const checked = orderContext.cart.filter((item) => item.isChecked)
+    const checkedCount = orderContext.cart.length
+
+    if (checked.length !== checkedCount) return false
+    else return true
   }
 
   const handleAllDelete = () => {
@@ -18,12 +34,6 @@ const Cart = () => {
       updateCart({ ...myContext, cart: [] })
     }
   }
-  useEffect(() => {
-    updateCart({
-      ...myContext,
-      cart: myContext.cart.map((item) => ({ ...item, isChecked: allCheckbox })),
-    })
-  }, [allCheckbox])
 
   return (
     <article className="cart_container">
@@ -33,7 +43,7 @@ const Cart = () => {
           <section className="cart-left-section">
             <div className="flex justify-between items-center">
               <div className="checkbox-container">
-                <Checkbox id="allCheckBox" isChecked={allCheckbox} onChange={handleChangeAll} />
+                <Checkbox id="allCheckBox" isChecked={isAllChecked()} onChange={handleChangeAll} />
                 <label className="checkbox-label" htmlFor="checkbox">
                   선택해제
                 </label>
