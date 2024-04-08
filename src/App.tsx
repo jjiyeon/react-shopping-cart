@@ -14,6 +14,7 @@ const router = createRouter({
     myOrder: {
       cart: [],
       order: [],
+      orderHistory: [],
     },
   },
 })
