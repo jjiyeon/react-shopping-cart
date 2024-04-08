@@ -14,6 +14,10 @@ export interface ProductsPage {
     previousPageParam: number
   }
 }
+
+interface ResponseDetail {
+  response: Product
+}
 export const getOrderList = async () => {
   const response = await fetch('/orders')
   const data: Array<Order> = await response.json()
@@ -46,10 +50,16 @@ export const getProductPage = async (param: string) => {
 }
 
 export const getProductDetailItem = async (param: string) => {
-  const response = await fetch(`/products/${param}`)
-  const data: Product = await response.json()
-
-  return data
+  // const response = await fetch(`/products/${param}`)
+  const response = await fetch(`https://lgbbwcvwtbrudityxxbd.supabase.co/functions/v1/products/${param}`, {
+    headers: {
+      uid: 'a4f55b13-be32-4e75-bfe6-119fdd7367e0',
+      Authorization:
+        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnYmJ3Y3Z3dGJydWRpdHl4eGJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTE0MzY5MzgsImV4cCI6MjAyNzAxMjkzOH0.V4nEgkFClH7OPi0glqZIQOtvpYkpirAcBGLCp8mJQiw',
+    },
+  })
+  const data: ResponseDetail = await response.json()
+  return data.response
 }
 
 export const postUser = async (param: string) => {
