@@ -12,7 +12,7 @@ const Header = () => {
 
         <div className="nav-sub-menu">
           <Link to="/cart">장바구니</Link>
-          <Link to="/order">주문 목록</Link>
+          <Link to="/orderList">주문 목록</Link>
         </div>
       </nav>
     </header>
