@@ -1,3 +1,3 @@
-export const fomattingComma = (price: number) => {
+export const formattingComma = (price: number) => {
   return price.toLocaleString('ko-KR')
 }

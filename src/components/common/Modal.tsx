@@ -9,7 +9,7 @@ type ModalProps = {
 
 const Modal = ({ props }: { props: ModalProps }) => {
   return (
-    <div className={`modal_dim}`}>
+    <div className={`modal_dim`}>
       <div className="modal_container">
         <p>장바구니에 담았어요!</p>
         <p>{props.message}</p>
