@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react'
 import { CartContext, CartItem, Order, UpdateCartContext } from '../context/cartsContext'
 
-type Action = 'ADD_CART_ITEM' | 'REMOVE_CART_ITEM' | 'ADD_ORDER_ITEM' | 'UPDATE_ITEM_QUANTITY'
+type Action = 'ADD_CART_ITEM' | 'REMOVE_CART_ITEM' | 'ADD_ORDER_ITEM' | 'UPDATE_ITEM_QUANTITY' | 'ADD_ORDER_HISTORY'
 
 const useCart = () => {
   const orderContext = useContext(CartContext)
@@ -27,12 +27,26 @@ const useCart = () => {
           state &&
           updateCartContext({
             ...orderContext,
-            cart: [...orderContext.cart, ...state],
+            cart: orderContext.cart.map((item) => {
+              if (item.id === state[0].id) return { ...item, quantity: state[0].quantity }
+              return item
+            }),
+          })
+        )
+      case 'ADD_ORDER_HISTORY':
+        return (
+          state &&
+          updateCartContext({
+            ...orderContext,
+            orderHistory: [
+              ...orderContext.orderHistory,
+              { id: orderContext.orderHistory.length + 1, orderDetails: state },
+            ],
           })
         )
 
       default:
-        throw new Error('Unhandled action type')
+        throw new Error('Unhandled action type') //에러를 던질필요가 있나?
     }
   }
   return {
