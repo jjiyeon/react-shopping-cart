@@ -1,14 +1,7 @@
-import { PropsWithChildren } from 'react'
-
-type CheckboxProps = {
-  label?: string
-}
-
-const Checkbox = ({ children }: PropsWithChildren<CheckboxProps>) => {
+const Checkbox = ({ id, checked, onChange, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => {
   return (
     <label htmlFor="selctAll">
-      <input type="checkbox" id="selctAll" />
-      {children}
+      <input className="checkbox" type="checkbox" value={id} onChange={onChange} checked={checked} {...props} />
     </label>
   )
 }

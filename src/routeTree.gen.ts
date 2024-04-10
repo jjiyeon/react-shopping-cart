@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as OrderListImport } from './routes/orderList'
 import { Route as OrderImport } from './routes/order'
 import { Route as ListImport } from './routes/list'
 import { Route as CartImport } from './routes/cart'
@@ -18,6 +19,11 @@ import { Route as IndexImport } from './routes/index'
 import { Route as ListIdImport } from './routes/list_.$id'
 
 // Create/Update Routes
+
+const OrderListRoute = OrderListImport.update({
+  path: '/orderList',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const OrderRoute = OrderImport.update({
   path: '/order',
@@ -64,6 +70,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderImport
       parentRoute: typeof rootRoute
     }
+    '/orderList': {
+      preLoaderRoute: typeof OrderListImport
+      parentRoute: typeof rootRoute
+    }
     '/list/$id': {
       preLoaderRoute: typeof ListIdImport
       parentRoute: typeof rootRoute
@@ -78,6 +88,7 @@ export const routeTree = rootRoute.addChildren([
   CartRoute,
   ListRoute,
   OrderRoute,
+  OrderListRoute,
   ListIdRoute,
 ])
 

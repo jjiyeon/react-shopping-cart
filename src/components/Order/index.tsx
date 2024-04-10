@@ -1,78 +1,65 @@
-import { useContext, useEffect } from 'react'
-import { CartsContext, UpdateCartsContext } from '../../context/cartsContext'
-import Modal from '../common/Modal'
-import { useQuery } from '@tanstack/react-query'
-import { getOrderList } from '../../api/cart'
-import useModal from '../../hooks/useModal'
+import { checkedItemCount, sumPrice } from '../../util/calculator'
+import { formattingComma } from '../../util/formatter'
+import useCart from '../../hooks/useCart'
+import { useNavigate } from '@tanstack/react-router'
 
-const OrderList = () => {
-  const cartsContext = useContext(CartsContext)
-  const updateCartsContext = useContext(UpdateCartsContext)
+const Order = () => {
+  const navigate = useNavigate()
+  const { orderContext, actions } = useCart()
 
-  const { props, openModal, setOpenModal } = useModal({ title: '장바구니에 담았어요!' })
-
-  const { data: orderList } = useQuery({
-    queryKey: ['orderList'],
-    queryFn: () => {
-      return getOrderList()
-    },
-    retry: 3,
-  })
-
-  useEffect(() => {
-    if (orderList) {
-      updateCartsContext({ ...cartsContext, order: orderList })
-    }
-  }, [orderList])
-
+  const checkedItems = checkedItemCount({ item: orderContext.order })
+  if (!checkedItems) return null
   return (
     <section className="order-section">
-      {openModal && (
-        <Modal
-          props={{
-            ...props,
-          }}
-        />
-      )}
       <header className="flex-col-center mt-20">
-        <h2 className="order-section__title">주문 목록</h2>
+        <h2 className="order-section__title">주문/결제</h2>
         <hr className="divide-line mt-20" />
       </header>
 
-      <div className="order-list">
-        <div className="order-list__header">
-          <span>주문번호: 1</span>
-          <span>상세보기 {`>`}</span>
-        </div>
-        {cartsContext.order.map((item, idx) => (
-          <div className="order-list-item" key={item.id}>
-            {item.orderDetails.map((order) => (
-              <div key={order.name} className="order-row">
-                <div className="flex gap-15 mt-10 custom">
-                  <img className="w-144 h-144" src={order.imageUrl} alt={order.name} />
-                  <div className="flex-col gap-15">
-                    <span className="order-name">{order.name}</span>
-                    <span className="order-info">
-                      {order.price}원 / 수량: {order.quantity}개
-                    </span>
-                  </div>
+      <div className="flex">
+        <section className="order-left-section">
+          <h3 className="order-title">주문 상품{`(${orderContext.order.length})개`}</h3>
+          <hr className="divide-line-gray mt-10" />
+          {orderContext.order.map((item) => (
+            <div className="order-container" key={item.id}>
+              <div className="flex gap-15 mt-10">
+                <img className="w-144 h-144" src={item.imageUrl} alt={item.name} />
+                <div className="flex-col gap-15">
+                  <span className="order-name">{item.name}</span>
+                  <span>수량: {item.quantity}</span>
                 </div>
-                <button
-                  className="primary-button-small flex-center self-start"
-                  onClick={() => {
-                    setOpenModal(true)
-                    updateCartsContext({ ...cartsContext, carts: [...cartsContext.carts, order] })
-                  }}
-                >
-                  장바구니
-                </button>
               </div>
-            ))}
+            </div>
+          ))}
+
+          <hr className="divide-line-thin mt-10" />
+        </section>
+        <section className="order-right-section">
+          <div className="order-right-section__top">
+            <h3 className="order-title">결제금액</h3>
           </div>
-        ))}
+          <hr className="divide-line-thin" />
+          <div className="order-right-section__bottom">
+            <div className="flex justify-between p-20 mt-20">
+              <span className="highlight-text">총 결제금액</span>
+              <span className="highlight-text">{formattingComma(sumPrice({ item: checkedItems }))}원</span>
+            </div>
+            <div className="flex-center mt-30 mx-10">
+              <button
+                className="primary-button flex-center"
+                onClick={() => {
+                  actions('ADD_ORDER_HISTORY', [...orderContext.order])
+                  navigate({ to: '/orderList' })
+                }}
+              >
+                {formattingComma(sumPrice({ item: checkedItems }))}원 결제하기
+              </button>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
   )
 }
 
-export default OrderList
+export default Order

@@ -3,7 +3,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
 import { useContext } from 'react'
-import CartsProvider, { CartsContext } from './context/cartsContext'
+import CartsProvider, { CartContext } from './context/cartsContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 // Create a new router instance
@@ -12,14 +12,21 @@ const router = createRouter({
   defaultPreload: 'intent',
   context: {
     myOrder: {
-      carts: [],
+      cart: [],
       order: [],
+      orderHistory: [],
     },
   },
 })
 
 // Create a client
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+    },
+  },
+})
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -28,7 +35,7 @@ declare module '@tanstack/react-router' {
   }
 }
 function App() {
-  const myOrder = useContext(CartsContext)
+  const myOrder = useContext(CartContext)
   return (
     <QueryClientProvider client={queryClient}>
       <CartsProvider>
