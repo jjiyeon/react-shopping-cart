@@ -3,7 +3,7 @@ import { CartItem, CartContext, UpdateCartContext } from '../../context/cartsCon
 import Checkbox from '../common/Checkbox'
 
 import TrashIcon from '../../assets/svgs/trash.svg?react'
-import { fomattingComma } from '../../util/formatter'
+import { formattingComma } from '../../util/formatter'
 
 enum Calc {
   plus,
@@ -100,7 +100,7 @@ const CartItemRow = () => {
                 </button>
               </div>
             </div>
-            <span className="cart-price">{fomattingComma(item.price * item.quantity)}원</span>
+            <span className="cart-price">{formattingComma(item.price * item.quantity)}원</span>
           </div>
         </div>
       ))}

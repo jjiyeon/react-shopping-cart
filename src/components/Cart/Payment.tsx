@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { fomattingComma } from '../../util/formatter'
+import { formattingComma } from '../../util/formatter'
 import { sumPrice } from '../../util/calculator'
 import useCart from '../../hooks/useCart'
 
@@ -26,7 +26,7 @@ const Payment = () => {
       <div className="cart-right-section__bottom">
         <div className="flex justify-between p-20 mt-20">
           <span className="highlight-text">결제예상금액</span>
-          <span className="highlight-text">{fomattingComma(sumPrice({ item: itemAmount }))}원</span>
+          <span className="highlight-text">{formattingComma(sumPrice({ item: itemAmount }))}원</span>
         </div>
         <div className="flex-center mt-30 mx-10">
           <button className="primary-button flex-center" disabled={itemAmount.length === 0} onClick={handleOrderClick}>
