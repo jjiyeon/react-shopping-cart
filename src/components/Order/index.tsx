@@ -1,10 +1,12 @@
-import { useContext } from 'react'
-import { CartContext } from '../../context/cartsContext'
 import { checkedItemCount, sumPrice } from '../../util/calculator'
-import { fomattingComma } from '../../util/formatter'
+import { formattingComma } from '../../util/formatter'
+import useCart from '../../hooks/useCart'
+import { useNavigate } from '@tanstack/react-router'
 
 const Order = () => {
-  const orderContext = useContext(CartContext)
+  const navigate = useNavigate()
+  const { orderContext, actions } = useCart()
+
   const checkedItems = checkedItemCount({ item: orderContext.order })
   if (!checkedItems) return null
   return (
@@ -40,11 +42,17 @@ const Order = () => {
           <div className="order-right-section__bottom">
             <div className="flex justify-between p-20 mt-20">
               <span className="highlight-text">총 결제금액</span>
-              <span className="highlight-text">{fomattingComma(sumPrice({ item: checkedItems }))}원</span>
+              <span className="highlight-text">{formattingComma(sumPrice({ item: checkedItems }))}원</span>
             </div>
             <div className="flex-center mt-30 mx-10">
-              <button className="primary-button flex-center">
-                {fomattingComma(sumPrice({ item: checkedItems }))}원 결제하기
+              <button
+                className="primary-button flex-center"
+                onClick={() => {
+                  actions('ADD_ORDER_HISTORY', [...orderContext.order])
+                  navigate({ to: '/orderList' })
+                }}
+              >
+                {formattingComma(sumPrice({ item: checkedItems }))}원 결제하기
               </button>
             </div>
           </div>
