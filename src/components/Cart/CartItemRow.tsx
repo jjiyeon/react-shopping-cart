@@ -63,7 +63,7 @@ const CartItemRow = () => {
           <div className="flex gap-15 mt-10">
             <Checkbox
               id={String(item.id)}
-              isChecked={item.isChecked ?? false}
+              checked={item.isChecked ?? false}
               onChange={() => handleCheckboxChange(item.id)}
             />
             <img className="w-144 h-144" src={item.imageUrl} alt={item.name} />

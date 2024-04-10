@@ -43,7 +43,7 @@ const Cart = () => {
           <section className="cart-left-section">
             <div className="flex justify-between items-center">
               <div className="checkbox-container">
-                <Checkbox id="allCheckBox" isChecked={isAllChecked()} onChange={handleChangeAll} />
+                <Checkbox id="allCheckBox" checked={isAllChecked()} onChange={handleChangeAll} />
                 <label className="checkbox-label" htmlFor="checkbox">
                   선택해제
                 </label>
