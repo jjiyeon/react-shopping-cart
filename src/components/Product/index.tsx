@@ -1,18 +1,22 @@
-import { useContext, useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import CartLogo from '../../assets/svgs/cart.svg?react'
-import { CartContext, Product, UpdateCartContext } from '../../context/cartsContext'
+import { Product } from '../../context/cartsContext'
 import { useNavigate } from '@tanstack/react-router'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { getProductAPI, getProductList } from '../../api/cart'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { getProductAPI } from '../../api/cart'
 import useIntersectionObserver from '../../hooks/useIntersectionObserver'
 import useCart from '../../hooks/useCart'
+import useModal from '../../hooks/useModal'
+import Modal from '../common/Modal'
 
 const ProductList = () => {
-  const productRef = useRef<HTMLLIElement>(null)
+  const navigate = useNavigate()
+
+  const productRef = useRef<HTMLLIElement[]>([])
+  const infiniteObserverRef = useRef<HTMLDivElement>(null)
 
   const { orderContext, actions } = useCart()
-  const navigate = useNavigate()
-  const infiniteObserverRef = useRef<HTMLDivElement>(null)
+  const { isOpen, setIsOpenModal } = useModal()
 
   const {
     data: productList,
@@ -43,20 +47,30 @@ const ProductList = () => {
     const itemAmount = orderContext.cart.filter((item) => item.id === param.id)
     if (itemAmount.length) {
       actions('UPDATE_ITEM_QUANTITY', [{ ...param, quantity: itemAmount[0].quantity++ }])
+    } else {
+      actions('ADD_CART_ITEM', [{ ...param, quantity: 1 }])
     }
   }
   if (!productList?.pages) return null
 
   return (
     <div className="product-container">
+      {isOpen && (
+        <Modal
+          props={{
+            isOpen,
+            setModalStatus: () => setIsOpenModal((state) => !state),
+          }}
+        />
+      )}
       <ul className="product_list">
-        {productList.pages.map((item) => (
+        {productList.pages.map((item, idx) => (
           <li
             className="list_box"
             key={item.id}
-            ref={productRef}
+            ref={(el: HTMLLIElement) => (productRef.current[idx] = el)} // ref는 사실, click시, e.target과 currentTarget을 구분해서 장바구니 추가를 하고 싶었답니다..
             role="link"
-            onClick={(e) => {
+            onClick={() => {
               navigate({ to: '/list/$id', params: { id: String(item.id) } })
             }}
           >
@@ -71,9 +85,11 @@ const ProductList = () => {
               <button
                 className="add_cart"
                 onClick={(e) => {
-                  handleAddCartClick(item)
-                  // updateCartContext({ ...cartsContext, cart: [...cartsContext.cart, { ...item, quantity: 1 }] })
-                  // navigate({ to: '/cart' })
+                  if (e.target !== productRef.current[idx]) {
+                    e.stopPropagation()
+                    handleAddCartClick(item)
+                    setIsOpenModal(true)
+                  }
                 }}
               >
                 <CartLogo />
